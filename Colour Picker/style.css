@@ -29,8 +29,8 @@
     bottom: 0;
 
     background-color: red;
-    border-left: 1px solid black;
-    border-top: 1px solid black;
+    /* border-left: 1px solid black;
+    border-top: 1px solid black; */
 }
 .grey_box{
     height: 30px;
