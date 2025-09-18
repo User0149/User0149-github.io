@@ -6,14 +6,28 @@ function copy(id){
     navigator.clipboard.writeText(val);
 }
 
-function hide_preview(){
-    let preview=document.getElementById("colour_preview_box");
-    preview.style.display="none";
-    
+function show_prev_values(){
     let rgb_value=document.getElementById("rgb_value");
     let hex_value=document.getElementById("hex_value");
     rgb_value.value=prev_rgb;
     hex_value.value=prev_hex;
+}
+function hide_preview_no_change_rgb(){
+    let preview=document.getElementById("colour_preview_box");
+    preview.style.display="none";
+    let hex_value=document.getElementById("hex_value");
+    hex_value.value=prev_hex;
+}
+function hide_preview_no_change_hex(){
+    let preview=document.getElementById("colour_preview_box");
+    preview.style.display="none";
+    let rgb_value=document.getElementById("rgb_value");
+    rgb_value.value=prev_rgb;
+}
+function hide_preview(){
+    let preview=document.getElementById("colour_preview_box");
+    preview.style.display="none";
+    show_prev_values();
 }
 function preview(rgb_code){
     let preview=document.getElementById("colour_preview_box");
@@ -24,6 +38,22 @@ function preview(rgb_code){
     let hex_value=document.getElementById("hex_value");
     rgb_value.value=rgb_code;
     hex_value.value=rgb_to_hex(rgb_code);
+}
+function preview_no_change_rgb(rgb_code){
+    let preview=document.getElementById("colour_preview_box");
+    preview.style.backgroundColor=rgb_code;
+    preview.style.display='block';
+
+    let hex_value=document.getElementById("hex_value");
+    hex_value.value=rgb_to_hex(rgb_code);
+}
+function preview_no_change_hex(rgb_code){
+    let preview=document.getElementById("colour_preview_box");
+    preview.style.backgroundColor=rgb_code;
+    preview.style.display='block';
+
+    let rgb_value=document.getElementById("rgb_value");
+    rgb_value.value=rgb_code;
 }
 
 function simplify_rgb(code){
@@ -105,12 +135,12 @@ function get_rgb(e,slider_idx){
 }
 
 function try_rgb_preview(rgb_code){
-    if(valid_rgb(rgb_code)) preview(simplify_rgb(rgb_code));
-    else hide_preview();
+    if(valid_rgb(rgb_code)) preview_no_change_rgb(simplify_rgb(rgb_code));
+    else hide_preview_no_change_rgb();
 }
 function try_hex_preview(hex_code){
-    if(valid_hex(hex_code)) preview(hex_to_rgb(simplify_hex(hex_code)));
-    else hide_preview();
+    if(valid_hex(hex_code)) preview_no_change_hex(hex_to_rgb(simplify_hex(hex_code)));
+    else hide_preview_no_change_hex();
 }
 
 function update_gradients(initial_rgb_code){
