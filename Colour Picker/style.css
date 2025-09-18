@@ -5,6 +5,8 @@
 #colour_edit_pane{
     width: 70%;
     height: 97vh;
+}
+.overflow{
     overflow: auto;
 }
 .black_border{

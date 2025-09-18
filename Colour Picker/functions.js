@@ -21,6 +21,14 @@ function simplify_rgb(code){
     let rgb=code.split(",");
     return "rgb("+String(Math.floor(+rgb[0]))+","+String(Math.floor(+rgb[1]))+","+String(Math.floor(+rgb[2]))+")";
 }
+function simplify_hex(code){
+    let ret="#";
+    for(let i=1;i<=6;i++){
+        if('A'<=code[i] && code[i]<='F') ret+=String.fromCharCode('a'.charCodeAt(0)+code.charCodeAt(i)-'A'.charCodeAt(0));
+        else ret+=code[i];
+    }
+    return ret;
+}
 
 function rgb_to_hex_comp(n){ // int -> string
     let digits="0123456789abcdef";
@@ -54,13 +62,36 @@ function valid_rgb(code){
 function valid_hex(code){
     if(code.length!=7) return 0;
     if(code[0]!='#') return 0;
-    if(!(('0'<=code[1] && code[1]<='9') || ('a'<=code[1] && code[1]<='f'))) return 0;
-    if(!(('0'<=code[2] && code[2]<='9') || ('a'<=code[2] && code[2]<='f'))) return 0;
-    if(!(('0'<=code[3] && code[3]<='9') || ('a'<=code[3] && code[3]<='f'))) return 0;
-    if(!(('0'<=code[4] && code[4]<='9') || ('a'<=code[4] && code[4]<='f'))) return 0;
-    if(!(('0'<=code[5] && code[5]<='9') || ('a'<=code[5] && code[5]<='f'))) return 0;
-    if(!(('0'<=code[6] && code[6]<='9') || ('a'<=code[6] && code[6]<='f'))) return 0;
+    if(!(('0'<=code[1] && code[1]<='9') || ('a'<=code[1] && code[1]<='f') || ('A'<=code[1] && code[1]<='F'))) return 0;
+    if(!(('0'<=code[2] && code[2]<='9') || ('a'<=code[2] && code[2]<='f' || ('A'<=code[2] && code[2]<='F')))) return 0;
+    if(!(('0'<=code[3] && code[3]<='9') || ('a'<=code[3] && code[3]<='f') || ('A'<=code[3] && code[3]<='F'))) return 0;
+    if(!(('0'<=code[4] && code[4]<='9') || ('a'<=code[4] && code[4]<='f') || ('A'<=code[4] && code[4]<='F'))) return 0;
+    if(!(('0'<=code[5] && code[5]<='9') || ('a'<=code[5] && code[5]<='f') || ('A'<=code[5] && code[5]<='F'))) return 0;
+    if(!(('0'<=code[6] && code[6]<='9') || ('a'<=code[6] && code[6]<='f') || ('A'<=code[6] && code[6]<='F'))) return 0;
     return 1;
+}
+
+function mix_rgb(a,b,k){
+    a_comps=a.slice(4,a.length-1).split(',');
+    b_comps=b.slice(4,b.length-1).split(',');
+    return "rgb("+String(Math.round((1-k)*(+a_comps[0])+k*(+b_comps[0])))+","+String(Math.round((1-k)*(+a_comps[1])+k*(+b_comps[1])))+","+String(Math.round((1-k)*(+a_comps[2])+k*(+b_comps[2])))+")"
+}
+
+function get_rgb(e,slider_idx){
+    let c_name=colours[slider_idx];
+    let rgb_code=rgb_values[slider_idx];
+    let slider_id=`${c_name}_slider`;
+    let slider=document.getElementById(slider_id);
+
+    let x1=slider.getBoundingClientRect().x;
+    let x2=x1+slider.getBoundingClientRect().width;
+
+    let x=e.pageX;
+
+    let k=(x-x1)/(x2-x1);
+    let a=prev_rgb;
+    let b=rgb_code;
+    return mix_rgb(a,b,k);
 }
 
 function try_rgb_preview(rgb_code){
@@ -72,6 +103,16 @@ function try_hex_preview(hex_code){
     else hide_preview();
 }
 
+function update_gradients(initial_rgb_code){
+    for(let i=0;i<=colours.length-1;i++){
+        let c_name=colours[i];
+        let rgb_code=rgb_values[i];
+
+        let slider=document.getElementById(`${c_name}_slider`);
+        slider.style.backgroundImage=`linear-gradient(to right,${initial_rgb_code},${rgb_code})`
+    }
+}
+
 function set_colour(rgb_code){
     let square=document.getElementById("colour_box");
     square.style.backgroundColor=rgb_code;
@@ -81,7 +122,7 @@ function set_colour(rgb_code){
     let hex_value=document.getElementById("hex_value");
     hex_value.value=prev_hex=rgb_to_hex(rgb_code);
 
-    // TODO: update gradients
+    update_gradients(rgb_code);
 }
 
 function try_set_rgb(rgb_code){
@@ -98,7 +139,7 @@ function try_set_rgb(rgb_code){
 function try_set_hex(hex_code){
     if(valid_hex(hex_code)){
         hide_preview();
-        set_colour(hex_to_rgb(hex_code));
+        set_colour(hex_to_rgb(simplify_hex(hex_code)));
     }
     else{
         hide_preview();
